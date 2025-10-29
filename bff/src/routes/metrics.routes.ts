@@ -1,8 +1,7 @@
 import { Router } from 'express';
+import { subscribeClient } from '../services/cache.service';
 
 const router = Router();
-
-let clients: any[] = [];
 
 router.get('/stream', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
@@ -10,32 +9,11 @@ router.get('/stream', (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
 
-  clients.push(res);
+  subscribeClient(res);
 
-// Enviamos una bienvenida inicial
-  res.write(`data: ${JSON.stringify({ message: 'Conectado al stream!' })}\n\n`);
-
-  req.on('close', () => {
-    clients = clients.filter(c => c !== res);
-  });
+  // Mandar un ping cada 30s para mantener la conexión viva
+  const interval = setInterval(() => res.write(':\n\n'), 30000);
+  req.on('close', () => clearInterval(interval));
 });
-
-router.post('/test', (req, res) => {
-  const newPost = {
-    id: Math.random(),
-    title: 'Nuevo post generado desde el backend',
-    body: 'Esto es una actualización SSE simulada',
-  };
-
-  broadcastUpdate({ data: [newPost], cached: false });
-  res.json({ success: true, sent: newPost });
-});
-
-// Función para emitir a todos los clientes conectados
-export const broadcastUpdate = (data: any) => {
-  clients.forEach(client => {
-    client.write(`data: ${JSON.stringify(data)}\n\n`);
-  });
-};
 
 export default router;

@@ -1,0 +1,17 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { PostResponse } from '../models/post';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PostsService {
+  private baseUrl = 'http://localhost:4000/api';
+
+  constructor(private http: HttpClient) {}
+
+  getPosts(): Observable<PostResponse> {
+    return this.http.get<PostResponse>(`${this.baseUrl}/data`);
+  }
+}

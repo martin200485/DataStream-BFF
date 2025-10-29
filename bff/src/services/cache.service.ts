@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
-import API_URL from '../shared/env';
+import { env } from "process";
+import { conexionRedis } from '../config/redis';
 
 export interface Post {
   userId: number;
@@ -15,47 +16,83 @@ export interface PostResponse {
   apiHits: number;
 }
 
-let cache: Post[] = [];
-let timestamp = 0;
-const CACHE_TTL = 60 * 1000; // 1 minuto
 let cacheHits = 0;
 let apiHits = 0;
 
-// Suscriptores SSE
-let subscribers: ((data: PostResponse) => void)[] = [];
+// Lista de clientes SSE conectados
+const clients: any[] = [];
 
-export async function getPosts(): Promise<PostResponse> {
-  const now = Date.now();
-  if (cache.length && now - timestamp < CACHE_TTL) {
-    cacheHits++;
-    return { data: cache, cached: true, cacheHits, apiHits };
-  }
+// --- FUNCIONES SSE ---
 
-  // Llamada a API pública
-  const res = await fetch(API_URL.API_URL);
-  const json: unknown = await res.json();
+// Suscribirse
+export function subscribeClient(client: any) {
+  clients.push(client);
 
-  if (Array.isArray(json)) {
-    cache = json.map(p => ({ ...p, cached: false }));
-  } else {
-    cache = [];
-  }
-
-  timestamp = now;
-  apiHits++;
-
-  const response = { data: cache, cached: false, cacheHits, apiHits };
-
-  // Notificar a suscriptores SSE
-  subscribers.forEach(fn => fn(response));
-
-  return response;
+  // Cuando se cierra la conexión, removemos
+  client.on('close', () => {
+    const index = clients.indexOf(client);
+    if (index !== -1) clients.splice(index, 1);
+  });
 }
 
-// Función para suscribirse a SSE
-export function subscribeToPosts(fn: (data: PostResponse) => void) {
-  subscribers.push(fn);
-  return () => {
-    subscribers = subscribers.filter(f => f !== fn);
-  };
+// Notificar a todos los SSE
+export const broadcastUpdate = (data: PostResponse) => {
+  clients.forEach(client => {
+    client.write(`data: ${JSON.stringify(data)}\n\n`);
+  });
+};
+
+export async function getPosts(): Promise<PostResponse> {
+  try {
+    const client = await conexionRedis();
+
+    let cacheKey = 'posts';
+  
+    // Verificamos si ya hay datos cacheados
+    const cachedData = await client.get(cacheKey);
+    if (cachedData) {
+      cacheHits++;
+      const parsed = JSON.parse(cachedData);
+      return { data: parsed, cached: true, cacheHits, apiHits };
+    }
+  
+    // No hay cache → llamada a la API
+    const res = await fetch(process.env.API_URL ?? "https://jsonplaceholder.typicode.com/posts");
+    const json = await res.json();
+  
+    const data = Array.isArray(json) ? json : [];
+  
+    // Guardamos en Redis con TTL de 60s
+    await client.set(cacheKey, JSON.stringify(data), { EX: 60 });
+    apiHits++;
+  
+    const response = { data, cached: false, cacheHits, apiHits };
+  
+    return response;  
+  } catch (error) {
+    return { data: [], cached: false, cacheHits, apiHits };
+  }
+}
+
+export async function addPost(): Promise<PostResponse> {
+  try {
+    const client = await conexionRedis();
+  
+    const post = { userId: 1, id: 101, title: 'Nuevo Post', body: 'Contenido...' };
+  
+    let cacheKey = 'posts';
+    const cachedData = await client.get(cacheKey);
+    let posts: Post[] = cachedData ? JSON.parse(cachedData) : [];
+    posts.push(post);
+  
+    await client.set(cacheKey, JSON.stringify(posts), { EX: 60 });
+  
+    const response = { data: [post], cached: false, cacheHits, apiHits };
+  
+    broadcastUpdate(response);
+  
+    return response;  
+  } catch (error) {
+    return { data: [], cached: false, cacheHits, apiHits };
+  }
 }
