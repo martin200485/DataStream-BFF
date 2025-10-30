@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { env } from "process";
-import { conexionRedis } from '../config/redis';
+import { getRedisClient, publishEvent } from '../config/redis';
 
 export interface Post {
   userId: number;
@@ -44,7 +44,7 @@ export const broadcastUpdate = (data: PostResponse) => {
 
 export async function getPosts(): Promise<PostResponse> {
   try {
-    const client = await conexionRedis();
+    const client = await getRedisClient();
 
     let cacheKey = 'posts';
   
@@ -74,25 +74,22 @@ export async function getPosts(): Promise<PostResponse> {
   }
 }
 
-export async function addPost(): Promise<PostResponse> {
-  try {
-    const client = await conexionRedis();
-  
-    const post = { userId: 1, id: 101, title: 'Nuevo Post', body: 'Contenido...' };
-  
-    let cacheKey = 'posts';
-    const cachedData = await client.get(cacheKey);
-    let posts: Post[] = cachedData ? JSON.parse(cachedData) : [];
-    posts.push(post);
-  
-    await client.set(cacheKey, JSON.stringify(posts), { EX: 60 });
-  
-    const response = { data: [post], cached: false, cacheHits, apiHits };
-  
-    broadcastUpdate(response);
-  
-    return response;  
-  } catch (error) {
-    return { data: [], cached: false, cacheHits, apiHits };
-  }
+export async function addPost(newPost: Post): Promise<PostResponse> {
+  const client = await getRedisClient();
+  const postsKey = 'posts';
+
+  // Obtener cache existente
+  const cached = await client.get(postsKey);
+  const posts = cached ? JSON.parse(cached) : [];
+
+  // Agregar nuevo post
+  posts.unshift(newPost);
+
+  // Guardar nuevamente en Redis
+  await client.set(postsKey, JSON.stringify(posts), { EX: 60 });
+
+  // Notificar a otros suscriptores
+  await publishEvent('posts_channel', newPost);
+
+  return { data: posts, cached: false, cacheHits, apiHits };
 }

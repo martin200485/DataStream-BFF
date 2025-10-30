@@ -8,7 +8,7 @@ export class SseService {
   events$ = this.subject.asObservable();
 
   connect() {
-    this.eventSource = new EventSource('http://localhost:4000/metrics/stream');
+    this.eventSource = new EventSource('http://localhost:4000/events');
     this.eventSource.onmessage = e => this.subject.next(JSON.parse(e.data));
     this.eventSource.onerror = err => console.error('SSE error', err);
   }

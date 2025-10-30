@@ -13,20 +13,13 @@
         <mat-icon [color]="cached ? 'primary' : 'warn'">memory</mat-icon>
         <span><strong>Cached:</strong> {{ cached ? '🟢 Sí' : '🔴 No' }}</span>
       </div>
+      <div class="stat-item">
+        <button style="background-color: blue; color: white; border-radius: 5px; padding: 5px; cursor: pointer;" title="Agregar post" (click)="createPost()">Agregar</button>
+      </div>
     </mat-card-content>
   </mat-card>
 
-  <div class="posts-list">
-    <mat-card *ngFor="let post of posts" class="post-card">
-      <mat-card-header>
-        <mat-icon mat-card-avatar color="accent">article</mat-icon>
-        <mat-card-title>{{ post.title }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>{{ post.body }}</p>
-      </mat-card-content>
-    </mat-card>
-  </div>
+  <app-post-list [posts]="posts"></app-post-list>
 </div>
 
 <ng-template #loadingTpl>

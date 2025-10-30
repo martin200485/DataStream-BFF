@@ -7,11 +7,12 @@ import { SseService } from './shared/services/sse.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { PostListComponent } from "./components/post-list";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [NgIf, NgFor, MatCardModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [NgIf, MatCardModule, MatIconModule, MatProgressSpinnerModule, PostListComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -57,12 +58,22 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   // Inicializar SSE (Server-Sent Events)
-  // GET /api/stream → para mantener actualizados los datos sin volver a pedirlos.
   initSSE() {
     this.sseService.events$.subscribe(event => {
-      if (event.data === undefined) return;
-      this.posts = [...event.data, ...this.posts];
-      this.notifyService.notify(event.data[0]);
+      if (!event?.data?.length) return;
+
+      const newPost = event.data[0];
+      this.posts = [newPost, ...this.posts];
+      this.notifyService.notify(newPost);
+    });
+  }
+
+  createPost() {
+    this.postsService.createPost({ userId: Math.random(), id: Math.random(), title: 'Nuevo post', body: 'Contenido del nuevo post' }).subscribe({
+      next: (response: PostResponse) => {
+        alert('Post creado');
+      },
+      error: (err) => console.error(err)
     });
   }
 }

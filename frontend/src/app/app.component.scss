@@ -25,35 +25,9 @@
   gap: 0.5rem;
 }
 
-.posts-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1rem;
-}
 
-.post-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%; /* asegura que todas las tarjetas tengan altura automática según el contenido */
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  background-color: #cfa2ff;
 
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  }
 
-  mat-card-header {
-    background: #fafafa;
-    border-bottom: 1px solid #eee;
-  }
-
-  mat-card-content {
-    padding-top: 0.5rem;
-    overflow-wrap: break-word; /* evita que el texto salga de la tarjeta */
-  }
-}
 
 .loading {
   display: flex;

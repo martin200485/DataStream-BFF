@@ -14,4 +14,8 @@ export class PostsService {
   getPosts(): Observable<PostResponse> {
     return this.http.get<PostResponse>(`${this.baseUrl}/data`);
   }
+
+  createPost(post: any): Observable<PostResponse> {
+    return this.http.post<PostResponse>(`${this.baseUrl}/create`, post);
+  }
 }

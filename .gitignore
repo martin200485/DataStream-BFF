@@ -1,42 +1,10 @@
 # Node
 bff/node_modules
-# Keep environment variables out of version control
 bff/.env
 bff/dist
 
 
 # Angular
-
-# Compiled output
 frontend/dist/
 frontend/.angular/cache/
-
-# IDEs and editors
-.idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
-
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
-
-# System files
-.DS_Store
-Thumbs.db
+frontend/node_modules

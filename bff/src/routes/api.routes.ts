@@ -9,7 +9,8 @@ router.get('/data', async (req, res) => {
 });
 
 router.post('/create', async (req, res) => { 
-  await addPost();
+  const { userId, id, title, body } = req.body;
+  await addPost({ userId, id, title, body });
   res.sendStatus(200);
 });
 
