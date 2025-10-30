@@ -1,7 +1,7 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PostsService } from './services/posts.service';
-import { Post, PostResponse } from './models/post';
+import { Post, PostResponse } from './models/post.model';
 import { NotifyService } from './shared/services/notify.service';
 import { SseService } from './shared/services/sse.service';
 import { MatCardModule } from '@angular/material/card';

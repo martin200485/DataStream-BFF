@@ -27,32 +27,32 @@ El objetivo fue construir una arquitectura simple pero escalable, mostrando cóm
 ---
 
 ## Estructura del proyecto Backend
-📦 bff/
-┣ 📂 src/
-┃ ┣ 📂 config/
-┃ ┃ ┣ redis.ts # Conexión centralizada a Redis Cloud
-┃ ┃ ┗ config.ts # Variables de entorno (API_URL, TTL, etc)
-┃ ┣ 📂 routes/
-┃ ┃ ┣ api.routes.ts # Rutas REST (GET, POST, DELETE)
-┃ ┃ ┗ sse.routes.ts # Endpoint para conexión SSE
-┃ ┣ 📂 services/
-┃ ┃ ┗ cache.service.ts # Lógica de cache, broadcast SSE y operaciones CRUD
-┃ ┗ app.ts # Entry point del servidor
-┣ .env # Variables sensibles (Redis credentials, API URLs)
-┣ package.json
-┗ tsconfig.json
+bff/
+- src/
+- - config/
+- - - redis.ts # Conexión centralizada a Redis Cloud
+- - - config.ts # Variables de entorno (API_URL, TTL, etc)
+- - routes/
+- - - api.routes.ts # Rutas REST (GET, POST, DELETE)
+- - - sse.routes.ts # Endpoint para conexión SSE
+- - services/
+- - - cache.service.ts # Lógica de cache, broadcast SSE y operaciones CRUD
+- - app.ts # Entry point del servidor
+- .env # Variables sensibles (Redis credentials, API URLs)
+- package.json
+- tsconfig.json
 
 # Instalar dependencias
 npm install
 
 # Configurar variables en .env
-REDIS_HOST=redis-xxxx.c11.us-east-1-3.ec2.redns.redis-cloud.com
-REDIS_PORT=19039
-REDIS_USER=default
-REDIS_PASS=*************
-REDIS_TTL=60
-API_URL=https://jsonplaceholder.typicode.com/posts
-FRONTEND_URL=http://localhost:4200
+- REDIS_HOST=redis-xxxx.c11.us-east-1-3.ec2.redns.redis-cloud.com
+- REDIS_PORT=19039
+- REDIS_USER=default
+- REDIS_PASS=*************
+- REDIS_TTL=60
+- API_URL=https://jsonplaceholder.typicode.com/posts
+- FRONTEND_URL=http://localhost:4200
 
 # Ejecutar el backend
 npm run dev
@@ -72,29 +72,27 @@ npm run dev
 
 ## Características destacadas
 
-✅ **Cache inteligente** con TTL en Redis (60s)  
-✅ **SSE en tiempo real** para recibir nuevos posts sin refresh  
-✅ **Arquitectura desacoplada** (frontend/backend independientes)  
-✅ **Deploy-ready** en cualquier nube o entorno Docker  
-✅ **Código limpio y documentado con TypeScript**
+ **Cache inteligente** con TTL en Redis (60s)  
+ **SSE en tiempo real** para recibir nuevos posts sin refresh  
+ **Arquitectura desacoplada** (frontend/backend independientes)  
+ **Deploy-ready** en cualquier nube o entorno Docker  
+ **Código limpio y documentado con TypeScript**
 
 ## Estructura del proyecto Frontend
 
 src/
-├── app/
-│ ├── components/
-│ │ ├── post-list/
-│ │ └── post-item/
-│ ├── services/
-│ │ ├── post.service.ts
-│ │ └── sse.service.ts
-│ ├── models/
-│ │ └── post.model.ts
-│ └── app.component.ts
-├── environments/
-│ ├── environment.ts
-│ └── environment.prod.ts
-└── index.html
+- app/
+- - - components/
+- - - - post-list/
+- - - - post-item/
+- - - services/
+- - - - post.service.ts
+- - - - sse.service.ts
+- - - models/
+- - - - post.model.ts
+- - app.component.ts
+- environments/
+- index.html
 
 # Instalar dependencias
 npm install

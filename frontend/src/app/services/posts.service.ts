@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PostResponse } from '../models/post';
+import { PostResponse } from '../models/post.model';
 
 @Injectable({
   providedIn: 'root'
