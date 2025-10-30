@@ -1,0 +1,72 @@
+<div class="dashboard-container" *ngIf="!loading; else loadingTpl">
+  <mat-grid-list cols="6" rowHeight="150px" gutterSize="12px">
+
+    <mat-grid-tile>
+      <mat-card class="metric-card">
+        <mat-icon color="accent">speed</mat-icon>
+        <mat-card-title>CPU Total</mat-card-title>
+        <mat-card-content>
+          <h5>{{ get('process_cpu_seconds_total') | number:'1.1-2' }} s</h5>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+
+    <mat-grid-tile>
+      <mat-card class="metric-card">
+        <mat-icon color="primary">memory</mat-icon>
+        <mat-card-title>Memoria</mat-card-title>
+        <mat-card-content>
+          <h5>{{ getMemoryMB() | number:'1.0-2' }} MB</h5>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+
+    <mat-grid-tile>
+      <mat-card class="metric-card">
+        <mat-icon color="warn">donut_large</mat-icon>
+        <mat-card-title>Heap usado</mat-card-title>
+        <mat-card-content>
+          <h5>{{ getHeapUsagePercent() | number:'1.0-1' }}%</h5>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+
+    <mat-grid-tile>
+      <mat-card class="metric-card">
+        <mat-icon color="accent">timelapse</mat-icon>
+        <mat-card-title>Event Loop Lag</mat-card-title>
+        <mat-card-content>
+          <h5>{{ get('nodejs_eventloop_lag_mean_seconds') | number:'1.3-3' }} s</h5>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+
+    <mat-grid-tile>
+      <mat-card class="metric-card">
+        <mat-icon color="primary">link</mat-icon>
+        <mat-card-title>Handles activos</mat-card-title>
+        <mat-card-content>
+          <h5>{{ get('nodejs_active_handles_total') }}</h5>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+
+    <mat-grid-tile>
+      <mat-card class="metric-card">
+        <mat-icon color="warn">developer_board</mat-icon>
+        <mat-card-title>Recursos activos</mat-card-title>
+        <mat-card-content>
+          <h5>{{ get('nodejs_active_resources_total') }}</h5>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+
+  </mat-grid-list>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading">
+    <mat-spinner></mat-spinner>
+    <p>Cargando métricas...</p>
+  </div>
+</ng-template>

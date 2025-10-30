@@ -1,10 +1,18 @@
-# BFF + Angular Frontend con Redis Cloud y SSE (Server Sent Events)
+# Proyecto: Node + Redis + Angular Dashboard + Prometheus
 
-Este proyecto demuestra un patrón **BFF (Backend for Frontend)** moderno implementado con **Node.js + Express + TypeScript**, que sirve datos cacheados desde **Redis Cloud** y mantiene el **Frontend Angular** sincronizado en tiempo real mediante **SSE (Server-Sent Events)**.
+Este proyecto demuestra una arquitectura moderna Node.js + Redis + Angular, implementando:
 
-El objetivo fue construir una arquitectura simple pero escalable, mostrando cómo reducir latencia y mantener una UI reactiva sin recurrir a WebSockets o polling continuo.
+Cacheo de peticiones HTTP con Redis Cloud
 
----
+Comunicación en tiempo real vía SSE (Server-Sent Events)
+
+Sistema de Pub/Sub con Redis para sincronizar eventos entre múltiples instancias
+
+Monitoreo con Prometheus en el backend
+
+Dashboard visual de métricas en Angular Material
+
+El objetivo es mostrar buenas prácticas de rendimiento, observabilidad y comunicación en tiempo real entre frontend y backend.
 
 ## Características principales
 
@@ -31,12 +39,12 @@ bff/
 - src/
 - - config/
 - - - redis.ts # Conexión centralizada a Redis Cloud
-- - - config.ts # Variables de entorno (API_URL, TTL, etc)
 - - routes/
 - - - api.routes.ts # Rutas REST (GET, POST, DELETE)
-- - - sse.routes.ts # Endpoint para conexión SSE
+- - - metrics.routes.ts # Endpoint para metricas PROMETHEUS
 - - services/
 - - - cache.service.ts # Lógica de cache, broadcast SSE y operaciones CRUD
+      sse.serivce.ts # Lógica pra mensajería SSE
 - - app.ts # Entry point del servidor
 - .env # Variables sensibles (Redis credentials, API URLs)
 - package.json
@@ -68,7 +76,7 @@ npm run dev
 | **Redis Cloud** | Cache distribuido y Pub/Sub. |
 | **dotenv** | Configuración de entorno segura. |
 | **TypeScript** | Tipado estático en todo el proyecto. |
-
+| **Prometheus Client (prom-client)** | Herramienta de latencia |
 
 ## Características destacadas
 
@@ -87,11 +95,13 @@ src/
 - - - - post-item/
 - - - services/
 - - - - post.service.ts
-- - - - sse.service.ts
+- - - - metrcis.service.ts
 - - - models/
 - - - - post.model.ts
-- - app.component.ts
-- environments/
+- - - views/
+- - - - dashboard (vista)
+- - - - post (posteos)
+- - app.component.ts (root)
 - index.html
 
 # Instalar dependencias
